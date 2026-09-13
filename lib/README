@@ -1,2 +1,9 @@
+Arduino uno
+Servo Motor
+
 This motor can be stopped and started at any time and position. 
 The LED indicates whether it is on or off.
+
+Rotation angle from 0 to 180 degree.
+
+Here are one function in a separate file included.

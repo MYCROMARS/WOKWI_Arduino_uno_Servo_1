@@ -1,8 +1,5 @@
 #include <Arduino.h>
 #include <Servo.h>
-
-#include <stdlib.h>
-#include <stdio.h>
     
 // header files
 #include "../include/button_1.h"

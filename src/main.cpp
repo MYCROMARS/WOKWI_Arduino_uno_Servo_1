@@ -1,18 +1,35 @@
 #include <Arduino.h>
 #include <Servo.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+    
+// header files
+#include "../include/button_1.h"
+#include "../include/button_1.cpp"
+
 // Create: object
 Servo myservo;
 
-int ServoPIN = 9;
+const int ServoPIN = 9;
 
 // Create & assign: Servo position
 int pos = 0;
-
 int a = 0;
 
 // Pins
-// const int rgb[] = {0, 6, 5, 3}; 
+const int PIN_button = 4;
+const int PIN_LED = 2;
+
+// Button
+int button_press = 0;
+int button_on = 0;
+
+// left = 1, right = 2
+int direction = 0;
+
+const int pause = 200;
+int output = 1;
 
 // Main Function
 void setup() 
@@ -29,44 +46,150 @@ void setup()
   myservo.attach(ServoPIN);
 
   // Activate: Pins 
-  // pinMode( rgb[1], OUTPUT);
+  pinMode( PIN_LED, OUTPUT);
+  pinMode( PIN_button, INPUT_PULLUP);
 
 }
 
 // Step Function
 void loop() 
 {
+  // Function: button ON/OFF
+  button_1(PIN_button, PIN_LED, &button_press, &button_on);
 
-  if (a == 0) {
+
+  // Start position
+  if (a == 0 && button_on == 1) {
+    output = 0;
     a = 1;
-    delay(2000);
 
-     Serial.println("left");
+    delay(pause);
+
+    Serial.println("left");
+
     for (pos = 90; pos >= 0; pos -= 1)
     {
+      // Direction Start
+      direction = 1;
+      
+      // Output
+      //Serial.println(pos);
+
+      // Motor
       myservo.write(pos);
+      
+      // Function: button OFF
+      button_1(PIN_button, PIN_LED, &button_press, &button_on);
+
+       // Stop
+      if (button_on == 0){break;}
+
       delay(10);
     }
+    // Correction
+    pos ++;
 
+    // Direction
+    if (pos == 0){direction = 2;}
+
+    // Serial.print("Position: ");
+    // Serial.println(pos);
+
+    delay(pause);
   }
-  
-  Serial.println("right");
 
-  for (pos = 0; pos <= 180; pos += 1)
+
+  // Function: button OFF
+  if (button_on == 1)
   {
-    myservo.write(pos);
-    delay(10);
+    button_1(PIN_button, PIN_LED, &button_press, &button_on);
   }
-  
-  
-  delay(500);
 
-  Serial.println("left");
-  for (pos = 180; pos >= 0; pos -= 1)
+
+  // right
+  if (direction == 2 && button_on == 1)
   {
-    myservo.write(pos);
-    delay(10);
+      output = 0;
+      Serial.println("right");
+  
+      for (pos = pos; pos <= 180; pos += 1)
+      {
+        // Output
+        //Serial.println(pos);
+
+        // Motor Position
+        myservo.write(pos);
+
+        // Function: button OFF
+        button_1(PIN_button, PIN_LED, &button_press, &button_on);
+
+        // Stop
+        if (button_on == 0){break;}
+
+        delay(10);
+      }
+
+      // Correction
+      pos --;
+
+      // Direction
+      if (pos == 180){direction = 1;}
+
+      // Serial.print("Position: ");
+      // Serial.println(pos);
+
+      delay(pause);
   }
 
-  delay(500);
+
+  // Function: button OFF
+  if (button_on == 1)
+  {
+    button_1(PIN_button, PIN_LED, &button_press, &button_on);
+  }
+  
+
+  // left
+  if (direction == 1 && button_on == 1)
+  {
+      output = 0;
+      Serial.println("left");
+
+      for (pos = pos; pos >= 0; pos -= 1)
+      {
+        // Output
+        //Serial.println(pos);
+
+        // Motor 
+        myservo.write(pos);
+        
+        // Function: button OFF
+        button_1(PIN_button, PIN_LED, &button_press, &button_on);
+        
+        // Stop
+        if (button_on == 0){break;}
+
+        delay(10);
+      }
+
+      // Correction
+      pos ++;
+
+      // Direction
+      if (pos == 0){direction = 2;}
+
+      // Serial.print("Position: ");
+      // Serial.println(pos);
+
+      delay(pause);
+  }
+
+  // Output
+  if (button_on == 0 && output == 0){
+      output = 1;
+      Serial.print("Position: ");
+      Serial.println(pos);
+    }
+
+delay(10);
 }
